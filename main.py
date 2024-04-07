@@ -1,3 +1,4 @@
+import numpy as np
 def get_x_mean_vec() -> list[float]:
     """
     Represents the mean value of the x coord for all the segments.
@@ -69,12 +70,12 @@ def get_track_width() -> float:
     return 0.8 * (47.8659 - 41.8691)
 
 
-def example_out_fun() -> list[tuple[float, float]]:
-    return [(10., 10.) for _ in range(0, 21)]
-    # same as
-    # return [(10., 10.)] * 20
-    # it creates a list inserting in a loop (0->19) the same element (10.,10.)
-    # the underscore is used to define a variable that will not be used
+x = get_x_mean_vec()
+y = get_y_mean_vec()
+
+
+def mean_points() -> list[tuple[float, float]]:
+    return [(x[i], y[i]) for i in range(len(x))]
 
 
 if __name__ == "__main__":
@@ -87,4 +88,68 @@ if __name__ == "__main__":
     # (x,y) is a tuple => list[tuple[float]]
     # GL HF
     pass  # no operation, used to say that the fun does nothing. remove it!
+
+
+# Half width of track
+hw = 0.8 * (47.8659 - 41.8691) / 2
+
+"""
+We iteratively calculate the angle described by the segments connecting three subsequent points.
+The bisector of said angle coincides with the section of the track in the i-th point of the triad.
+"""
+
+# Define vectors v connecting points (i) and (i+1) as a tuple
+def v_vector() -> list[tuple[float, float]]:
+    x = get_x_mean_vec()
+    y = get_y_mean_vec()
+    return [((x[i+1] - x[i]), (y[i+1] - y[i])) for i in range(0, 20)]
+
+
+# Define vectors w connecting points (i) and (i-1) as a tuple
+def w_vector() -> list[tuple[float, float]]:
+    x = get_x_mean_vec()
+    y = get_y_mean_vec()
+    return [((x[i-1] - x[i]), (y[i-1] - y[i])) for i in range(0, 20)]
+
+
+v = v_vector()
+w = w_vector()
+
+
+# Norms of vectors v and w
+def v_norm() -> list[float]:
+    return [np.sqrt((x[i+1] - x[i])**2 + (y[i+1] - y[i])**2) for i in range(0, 20)]
+
+
+def w_norm() -> list[float]:
+    return [np.sqrt((x[i-1] - x[i])**2 + (y[i-1] - y[i])**2) for i in range(0, 20)]
+
+
+vn = v_norm()
+wn = w_norm()
+
+
+# Define dot product of vectors as a tuple
+def dot() -> list[tuple[float, float]]:
+    return [(v[i][0] * w[i][0]) + (v[i][1] * w[i][1]) for i in range(0,20)]
+
+
+dot = dot()
+
+
+# Find angle of the bisector from dot product formula
+def theta() -> list[float]:
+    return [np.arccos(dot[i] / (2 * vn[i] * wn[i])) for i in range(0, 20)]
+
+
+theta = theta()
+
+
+# Find coordinates of the bisector from the dot product formula
+def bisector() -> list[tuple[float, float]]:
+    return [((vn[i]*hw*np.cos(theta[i])/v[i][0]), (vn[i]*hw*np.cos(theta[i])/v[i][1])) for i in range(0, 20)]
+
+
+z = bisector()
+
 
