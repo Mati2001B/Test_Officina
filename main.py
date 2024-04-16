@@ -70,11 +70,9 @@ def get_track_width() -> float:
     return 0.8 * (47.8659 - 41.8691)
 
 
-x = get_x_mean_vec()
-y = get_y_mean_vec()
-
-
 def mean_points() -> list[tuple[float, float]]:
+    x = get_x_mean_vec()
+    y = get_y_mean_vec()
     return [(x[i], y[i]) for i in range(len(x))]
 
 
@@ -112,25 +110,23 @@ def w_vector() -> list[tuple[float, float]]:
     return [((x[i-1] - x[i]), (y[i-1] - y[i])) for i in range(0, 20)]
 
 
-v = v_vector()
-w = w_vector()
-
-
 # Norms of vectors v and w
 def v_norm() -> list[float]:
+    x = get_x_mean_vec()
+    y = get_y_mean_vec()
     return [np.sqrt((x[i+1] - x[i])**2 + (y[i+1] - y[i])**2) for i in range(0, 20)]
 
 
 def w_norm() -> list[float]:
+    x = get_x_mean_vec()
+    y = get_y_mean_vec()
     return [np.sqrt((x[i-1] - x[i])**2 + (y[i-1] - y[i])**2) for i in range(0, 20)]
-
-
-vn = v_norm()
-wn = w_norm()
 
 
 # Define dot product of vectors as a tuple
 def dot() -> list[tuple[float, float]]:
+    v = v_vector()
+    w = w_vector()
     return [(v[i][0] * w[i][0]) + (v[i][1] * w[i][1]) for i in range(0,20)]
 
 
@@ -139,17 +135,59 @@ dot = dot()
 
 # Find angle of the bisector from dot product formula
 def theta() -> list[float]:
+    vn = v_norm()
+    wn = w_norm()
     return [np.arccos(dot[i] / (2 * vn[i] * wn[i])) for i in range(0, 20)]
 
 
+# Find bisector vector by rotating the w vector of a theta angle
 theta = theta()
 
+def rotated_w() -> list[tuple[float, float]]:
+    for i in range(0, 20):
+        w = w_vector()
+        z_x = []
+        z_y = []
+        z_x = [w[i][0] * np.cos(theta[i]) + w[i][1] * np.sin(theta[i]) for i in range(0, 20)]
+        z_x.append(z_x)
+        z_y = [-w[i][0]*np.sin(theta[i]) + w[i][1]*np.cos(theta[i]) for i in range(0, 20)]
+        z_y.append(z_y)
+        z = [(z_x[i], z_y[i])]
+        print(z)
+    return z
 
-# Find coordinates of the bisector from the dot product formula
-def bisector() -> list[tuple[float, float]]:
-    return [((vn[i]*hw*np.cos(theta[i])/v[i][0]), (vn[i]*hw*np.cos(theta[i])/v[i][1])) for i in range(0, 20)]
+
+# We have to give the right lenght to the vector
+# it is necessary to normalize the z vector and then give it the lenght of the half width of the track
+# We later define this vector as u
+def u_vector() -> list[tuple[float, float]]:
+    z = rotated_w()
+    wn = w_norm()
+    return [((z[i][0] * hw / wn[i]), (z[i][1] * hw / wn[i])) for i in range(0, 20)]
 
 
-z = bisector()
+# Rotate the z vector of 180 degrees to find the other set of coordinates
+# We call the new vectors as a
+def a_vector() -> list[tuple[float, float]]:
+    for i in range(0, 20):
+        u = u_vector()
+        a_x = []
+        a_y = []
+        a_x = [u[i][0] * np.cos(np.pi) + u[i][1] * np.sin(np.pi) for i in range(0, 20)]
+        a_x.append(a_x)
+        a_y = [-u[i][0]*np.sin(np.pi) + u[i][1]*np.cos(np.pi) for i in range(0, 20)]
+        a_y.append(a_y)
+        a = [(a_x[i], a_y[i])]
+        print(a)
+    return a
+
+
+
+
+
+
+
+# Dot product is negative or positive considering the theta angle (convex or concave)
+
 
 
