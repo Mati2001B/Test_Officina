@@ -152,9 +152,7 @@ def rotated_w() -> list[tuple[float, float]]:
         z_x.append(z_x)
         z_y = [-w[i][0]*np.sin(theta[i]) + w[i][1]*np.cos(theta[i]) for i in range(0, 20)]
         z_y.append(z_y)
-        z = [(z_x[i], z_y[i])]
-        print(z)
-    return z
+    return [(z_x[i], z_y[i]) for i in range(0, 20)]
 
 
 # We have to give the right lenght to the vector
@@ -177,9 +175,7 @@ def a_vector() -> list[tuple[float, float]]:
         a_x.append(a_x)
         a_y = [-u[i][0]*np.sin(np.pi) + u[i][1]*np.cos(np.pi) for i in range(0, 20)]
         a_y.append(a_y)
-        a = [(a_x[i], a_y[i])]
-        print(a)
-    return a
+    return [(a_x[i], a_y[i]) for i in range(0, 20)]
 
 
 
