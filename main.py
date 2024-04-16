@@ -62,12 +62,8 @@ def get_y_mean_vec() -> list[float]:
     ]
 
 
-def get_track_width() -> float:
-    """
-    Get the track width (divide it by 2 if you need the distance from the center to outer)
-    :return: track width
-    """
-    return 0.8 * (47.8659 - 41.8691)
+def hw_track() -> float:
+    return 0.8 * (47.8659 - 41.8691) / 2
 
 
 def mean_points() -> list[tuple[float, float]]:
@@ -87,9 +83,6 @@ if __name__ == "__main__":
     # GL HF
     pass  # no operation, used to say that the fun does nothing. remove it!
 
-
-# Half width of track
-hw = 0.8 * (47.8659 - 41.8691) / 2
 
 """
 We iteratively calculate the angle described by the segments connecting three subsequent points.
@@ -130,21 +123,18 @@ def dot() -> list[tuple[float, float]]:
     return [(v[i][0] * w[i][0]) + (v[i][1] * w[i][1]) for i in range(0,20)]
 
 
-dot = dot()
-
-
 # Find angle of the bisector from dot product formula
-def theta() -> list[float]:
+def bisector_angle() -> list[float]:
+    dotp = dot()
     vn = v_norm()
     wn = w_norm()
-    return [np.arccos(dot[i] / (2 * vn[i] * wn[i])) for i in range(0, 20)]
+    return [np.arccos(dotp[i] / (2 * vn[i] * wn[i])) for i in range(0, 20)]
 
 
 # Find bisector vector by rotating the w vector of a theta angle
-theta = theta()
-
 def rotated_w() -> list[tuple[float, float]]:
     for i in range(0, 20):
+        theta = bisector_angle()
         w = w_vector()
         z_x = []
         z_y = []
@@ -155,12 +145,13 @@ def rotated_w() -> list[tuple[float, float]]:
     return [(z_x[i], z_y[i]) for i in range(0, 20)]
 
 
-# We have to give the right lenght to the vector
-# it is necessary to normalize the z vector and then give it the lenght of the half width of the track
-# We later define this vector as u
+# In order to give the right length to the vector we normalize the z vector
+# and give it the length of the half width of the track.
+# We define the resulting vector as u
 def u_vector() -> list[tuple[float, float]]:
     z = rotated_w()
     wn = w_norm()
+    hw = hw_track()
     return [((z[i][0] * hw / wn[i]), (z[i][1] * hw / wn[i])) for i in range(0, 20)]
 
 
