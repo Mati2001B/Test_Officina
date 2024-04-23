@@ -178,6 +178,25 @@ def all_track_points() -> list[tuple[float, float]]:
     a = a_vector()
     return u + a
 
+# Distinguish inner and outer bounds of the track using ConvexHull
+def distinguish_bounds():
+    points = all_track_points()
+    hull = ConvexHull(points)
+    inner_bounds = []
+    outer_bounds = []
+    for i, vertex in enumerate(hull.vertices):
+        if i >= 20:
+            outer_bounds.append(points[vertex])
+        else:
+            inner_bounds.append(points[vertex])
+    return inner_bounds, outer_bounds
+
+
+
+def point_in_hull(point, hull):
+    points = all_track_points()
+    tri = Delaunay(points)
+    return Delaunay.find_simplex(tri, point)
 
 
 
