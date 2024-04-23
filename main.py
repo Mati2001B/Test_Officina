@@ -73,17 +73,6 @@ def mean_points() -> list[tuple[float, float]]:
     return [(x[i], y[i]) for i in range(len(x))]
 
 
-if __name__ == "__main__":
-    # You need to calculate the outer and inner boundaries.
-    # use the provided functions to get the data.
-    # create a new function that does the
-    # calculation and then return the result (without side effect)
-    # so the desired output would be having a list of (x,y) coord for inner boundary
-    # and (x,y) coord for outer boundary (each with 20 elements, since we have 20 segments)
-    # (x,y) is a tuple => list[tuple[float]]
-    # GL HF
-    pass  # no operation, used to say that the fun does nothing. remove it!
-
 
 """
 We iteratively calculate the angle described by the segments connecting three subsequent points.
@@ -116,7 +105,9 @@ def v_norm() -> list[float]:
 def w_norm() -> list[float]:
     x = get_x_mean_vec()
     y = get_y_mean_vec()
-    return [np.sqrt((x[i-1] - x[i])**2 + (y[i-1] - y[i])**2) for i in range(0, 20)]
+    wn = [np.sqrt((x[i - 1] - x[i]) ** 2 + (y[i - 1] - y[i]) ** 2) for i in range(1, 20)]
+    wn0 = [np.sqrt((x[0] - x[19]) ** 2 + (y[0] - y[19]) ** 2)]
+    return wn0 + wn
 
 
 # Define dot product of vectors as a tuple
@@ -197,6 +188,9 @@ def point_in_hull(point, hull):
     points = all_track_points()
     tri = Delaunay(points)
     return Delaunay.find_simplex(tri, point)
+
+if __name__ == "__main__":
+    distinguish_bounds()
 
 
 
